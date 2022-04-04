@@ -1,54 +1,71 @@
-package com.neo4j.energyestimator.dao;
+package com.creditsuisse.loganalyzer.dao;
 
-import com.neo4j.loganalyzer.model.EventLog;
-import com.neo4j.loganalyzer.model.MessageType;
+import java.sql.*;
 
-import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Optional;
-
-import org.junit.jupiter.api.AfterEach;
+import com.creditsuisse.loganalyzer.model.Event;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 public class HSQLDBEventsStoreTest {
+    @InjectMocks private HSQLDBEventsStore mockEventsStore;
+    @Mock private Connection mockConnection;
+    @Mock private Statement mockStatement;
+    @Mock private PreparedStatement mockPreparedStatement;
+    @Mock private ResultSet mockResultSet;
 
-    private EventsStore eventsStore = new HSQLDBEventsStore();
-
-    @AfterEach
-    public void tearDown() {
-        eventsStore.deleteMessages();
+    @BeforeAll
+    public static void setup() {
+        MockitoAnnotations.openMocks(HSQLDBEventsStoreTest.class);
     }
 
     @Test
-    public void storeMessagePersistsTurnOffMessage() {
-        eventsStore.storeMessage("1544213763 TurnOff");
-        Map<LocalDateTime, EventLog> messages = eventsStore.getMessages();
-        assertEquals(1, messages.size());
-        messages.entrySet().forEach(entrySet -> {
-            EventLog msg = entrySet.getValue();
-            assertEquals(MessageType.TurnOff, msg.getType());
-            assertEquals(LocalDateTime.of(2018, 12, 7, 20, 16, 3), msg.getTime());
-        });
+    public void createEventsTable() throws SQLException {
+        Mockito.when(mockConnection.createStatement()).thenReturn(mockStatement);
+        Mockito.when(mockStatement.executeUpdate(Mockito.anyString())).thenReturn(1);
+
+        mockEventsStore.createEventsTable();
+
+        Mockito.verify(mockConnection).createStatement();
+        Mockito.verify(mockStatement).executeUpdate(Mockito.anyString());
     }
 
     @Test
-    public void storeMessagePersistsDeltaMessage() {
-        eventsStore.storeMessage("1544211963 Delta +0.75");
-        Map<LocalDateTime, EventLog> messages = eventsStore.getMessages();
-        assertEquals(1, messages.size());
-        messages.entrySet().forEach(entrySet -> {
-            EventLog msg = entrySet.getValue();
-            assertEquals(MessageType.Delta, msg.getType());
-            assertEquals(Optional.of(0.75), msg.getValue());
-            assertEquals(LocalDateTime.of(2018, 12, 7, 19, 46, 3), msg.getTime());
-        });
+    public void writeEvent() throws SQLException {
+        Mockito.when(mockConnection.prepareStatement(Mockito.anyString())).thenReturn(mockPreparedStatement);
+        Mockito.when(mockPreparedStatement.executeUpdate()).thenReturn(1);
+
+        Event event = new Event("id", 5, true, null, null);
+        mockEventsStore.writeEvent(event);
+
+        Mockito.verify(mockConnection).prepareStatement(Mockito.anyString());
     }
 
     @Test
-    public void storeMessageHandlesDeduplication() {
-        eventsStore.storeMessage("1544211963 Delta +0.75");
-        eventsStore.storeMessage("1544211963 Delta +0.75");
-        assertEquals(1, eventsStore.getMessages().size());
+    public void getEvents() throws SQLException {
+        Mockito.when(mockConnection.createStatement()).thenReturn(mockStatement);
+        Mockito.when(mockStatement.executeQuery(Mockito.anyString())).thenReturn(mockResultSet);
+
+        mockEventsStore.getEvents();
+
+        Mockito.verify(mockConnection).createStatement();
+        Mockito.verify(mockStatement).executeQuery(Mockito.anyString());
+    }
+
+    @Test
+    public void deleteEvents() throws SQLException {
+        Mockito.when(mockConnection.createStatement()).thenReturn(mockStatement);
+        Mockito.when(mockStatement.executeUpdate(Mockito.anyString())).thenReturn(1);
+
+        mockEventsStore.deleteEvents();
+
+        Mockito.verify(mockConnection).createStatement();
+        Mockito.verify(mockStatement).executeUpdate(Mockito.anyString());
     }
 }

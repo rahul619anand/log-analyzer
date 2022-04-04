@@ -1,7 +1,11 @@
-package com.neo4j.loganalyzer.model;
+package com.creditsuisse.loganalyzer.model;
 
+import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Event object represents a single event row stored in HSQL DB
+ */
 public class Event {
     private String id;
     private long duration;
@@ -13,8 +17,16 @@ public class Event {
         this.id = id;
         this.duration = duration;
         this.alert = alert;
-        this.host = host;
-        this.type = type;
+        if(host == null) {
+            this.host = Optional.empty();
+        } else {
+            this.host = host;
+        }
+        if(type == null) {
+            this.type = Optional.empty();
+        } else {
+            this.type = type;
+        }
     }
 
     public String getId() {
@@ -66,5 +78,22 @@ public class Event {
                 ", host=" + host +
                 ", type=" + type +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Event event = (Event) o;
+        return duration == event.duration &&
+                alert == event.alert &&
+                id.equals(event.id) &&
+                Objects.equals(host, event.host) &&
+                Objects.equals(type, event.type);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, duration, alert, host, type);
     }
 }

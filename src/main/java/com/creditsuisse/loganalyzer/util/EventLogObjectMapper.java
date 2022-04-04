@@ -7,19 +7,22 @@ import com.creditsuisse.loganalyzer.model.EventLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JsonToObjectMapper {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JsonToObjectMapper.class);
+/**
+ * Utility to convert a line of event log in json format to corresponding Object.
+ */
+public class EventLogObjectMapper {
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventLogObjectMapper.class);
     private ObjectMapper mapper;
 
-    public JsonToObjectMapper () {
+    public EventLogObjectMapper() {
         mapper = new ObjectMapper();
         mapper.registerModule(new Jdk8Module());
     }
 
-    public EventLog map(String json) throws JsonProcessingException {
-        LOGGER.debug("JSON line:", json);
+    public EventLog toEventLog(String json) throws JsonProcessingException {
+        LOGGER.debug("JSON line:"+ json);
         EventLog eventLog = mapper.readValue(json, EventLog.class);
-        LOGGER.debug("Decoded event Log:", eventLog);
+        LOGGER.debug("Decoded event Log:"+ eventLog);
         return eventLog;
     }
 }

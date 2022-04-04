@@ -10,13 +10,13 @@
         </layout>
     </appender>
 
-    <property name="HOME_LOG" value="logs/app.log"/>
+    <property name="HOME_LOG" value="logs/loganalyzer.log"/>
 
     <appender name="FILE-ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${HOME_LOG}</file>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>logs/archived/app.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>logs/archived/loganalyzer.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <!-- each archived file, size max 100MB -->
             <maxFileSize>100MB</maxFileSize>
             <!-- total size of all archive files, if total size > 2GB, it will delete old archived file -->
