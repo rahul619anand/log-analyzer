@@ -3,7 +3,7 @@ plugins {
     id 'application'
 }
 
-group 'com.neo4j'
+group 'com.creditsuisse'
 version '1.0-SNAPSHOT'
 
 repositories {
@@ -12,17 +12,20 @@ repositories {
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.2'
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.13.2'
+    compile group: 'org.hsqldb', name: 'hsqldb', version: '2.3.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
     implementation 'ch.qos.logback:logback-core:1.2.10'
     implementation 'ch.qos.logback:logback-classic:1.2.10'
     implementation 'org.slf4j:slf4j-api:1.7.33'
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '4.4.0'
+
+    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '4.4.0'
+
 }
 
-mainClassName = 'com.neo4j.energyestimator.EnergyEstimatorApp'
-
-run {
-    standardInput = System.in
-}
+mainClassName = 'com.creditsuisse.loganalyzer.App'
 
 test {
     useJUnitPlatform()
